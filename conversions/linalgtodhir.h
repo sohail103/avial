@@ -10,6 +10,7 @@
 #include "includes/dhirTypes.h"
 #include "includes/utils.h"
 #include <llvm/ADT/SmallVector.h>
+#include <mlir/Dialect/Utils/StructuredOpsUtils.h>
 
 using namespace mlir;
 using namespace dhir;
@@ -44,16 +45,12 @@ struct ConvertLinalgToDhirPass
         return;
       }
 
-      bool outerIsReduction =
-          !iteratorTypes.empty() &&
-          iteratorTypes.front() == utils::IteratorType::reduction;
-
-      if (!outerIsReduction) {
+      bool outerIsParallel = iteratorTypes.front() == utils::IteratorType::parallel;
+      if (outerIsParallel) {
         toReplicateVector.push_back(genericOp);
       } else {
-        llvm::errs() << "Wrapping linalg.generic with reduction outer dim as "
-                        "single unpartitioned task: "
-                     << genericOp << "\n";
+        llvm::errs() << "Wrapping linalg.generic with unsupported outer iterator "
+        "as single unpartitioned task: " << genericOp << "\n";
         toStubTaskVector.push_back(genericOp);
       }
     });
