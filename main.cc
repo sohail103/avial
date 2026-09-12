@@ -250,13 +250,14 @@ int main(int argc, char *argv[])
         pm.addPass(createGpuToLLVMConversionPass());
 
         pm.addPass(createConvertNVVMToLLVMPass());
-        // pm.addPass(mlir::createLowerAffinePass());
 
         pm.addPass(mlir::memref::createExpandStridedMetadataPass());
         pm.addPass(createSCFToControlFlowPass());
         pm.addPass(createConvertMPItoLLVM());
         pm.addPass(createArithToLLVMConversionPass());
         pm.addPass(mlir::createConvertIndexToLLVMPass());
+
+        pm.addPass(mlir::createLowerAffinePass());
 
         // pm.addPass(createUBToLLVMConversionPass());
 
